@@ -20,6 +20,27 @@
   color: var(--color-muted);
 }
 
+.section-title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.small {
+  font-size: 0.9rem;
+}
+
 .btn-accent {
   display: inline-block;
   border: none;
@@ -33,6 +54,96 @@
 
 .btn-accent:hover {
   background: var(--color-accent-hover);
+}
+
+.btn-ghost,
+.btn-danger-ghost,
+.btn-link {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.btn-ghost:hover,
+.btn-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-danger-ghost {
+  color: var(--color-danger);
+  border-color: #f0c2be;
+}
+
+.btn-danger-ghost:hover {
+  background: #fff5f4;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+
+.card-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-3);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: lowercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.badge-pendente { background: var(--status-job-pendente); }
+.badge-run { background: var(--status-job-run); }
+.badge-ok { background: var(--status-job-ok); }
+.badge-fail { background: var(--status-job-fail); }
+.badge-aberta { background: var(--status-aberta); }
+.badge-analise { background: var(--status-analise); }
+.badge-resolvida { background: var(--status-resolvida); }
+.badge-descartada { background: var(--status-descartada); }
+
+.form-panel h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.timeline {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.timeline li {
+  margin-bottom: 0.45rem;
 }
 
 .api-hint {

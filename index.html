@@ -32,10 +32,9 @@
       </header>
 
       <main>
-        <h1 class="view-title">Painel</h1>
-        <p class="view-lead">
-          Triagem de inconsistências geradas por checagens. Abra este
-          <code>index.html</code> direto no navegador — sem servidor de front.
+        <h1 class="view-title" id="view-title">Painel</h1>
+        <p class="view-lead" id="view-lead">
+          Triagem de inconsistências geradas por checagens.
         </p>
         <div id="app"></div>
       </main>
@@ -44,6 +43,12 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script src="js/config.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/api/client.js"></script>
+    <script src="js/api/jobs.js"></script>
+    <script src="js/api/inconsistencias.js"></script>
+    <script src="js/views/jobs.js"></script>
+    <script src="js/views/inconsistencias.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>
