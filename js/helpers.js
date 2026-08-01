@@ -31,3 +31,52 @@ BlindSpot.helpers = {
     return String(status || "").replace(/_/g, " ");
   },
 };
+
+BlindSpot.rules = {
+  PARECER_MIN: 10,
+  COMPETENCIA_RE: /^\d{4}-\d{2}$/,
+
+  validarCompetencia: function (valor) {
+    var v = String(valor || "").trim();
+    if (!v) {
+      return "Informe a competência (ex.: 2026-07).";
+    }
+    if (!this.COMPETENCIA_RE.test(v)) {
+      return "Competência no formato AAAA-MM (ex.: 2026-07).";
+    }
+    return null;
+  },
+
+  validarComentario: function (autor, texto) {
+    if (!String(autor || "").trim()) {
+      return "Informe o autor do comentário.";
+    }
+    if (!String(texto || "").trim()) {
+      return "O texto do comentário é obrigatório.";
+    }
+    if (String(texto).trim().length > 2000) {
+      return "Comentário pode ter no máximo 2000 caracteres.";
+    }
+    return null;
+  },
+
+  validarEncerramento: function (status, parecer) {
+    var fecha = status === "resolvida" || status === "descartada";
+    if (!fecha) {
+      return null;
+    }
+    var texto = String(parecer || "").trim();
+    if (texto.length < this.PARECER_MIN) {
+      return (
+        "Para " +
+        status.replace("_", " ") +
+        ", o parecer precisa ter pelo menos " +
+        this.PARECER_MIN +
+        " caracteres (hoje: " +
+        texto.length +
+        ")."
+      );
+    }
+    return null;
+  },
+};
