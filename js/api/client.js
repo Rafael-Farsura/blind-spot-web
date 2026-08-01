@@ -26,6 +26,7 @@ BlindSpot.api = (function () {
 
       return response.text().then(function (raw) {
         var data = null;
+        
         if (raw) {
           try {
             data = JSON.parse(raw);
@@ -38,9 +39,11 @@ BlindSpot.api = (function () {
           var message =
             (data && data.erro) ||
             "Falha na requisição (" + response.status + ").";
+            
           var error = new Error(message);
           error.status = response.status;
           error.payload = data;
+          
           throw error;
         }
 
@@ -53,12 +56,15 @@ BlindSpot.api = (function () {
     get: function (path) {
       return request("GET", path);
     },
+
     post: function (path, body) {
       return request("POST", path, body || {});
     },
+
     patch: function (path, body) {
       return request("PATCH", path, body || {});
     },
+
     del: function (path) {
       return request("DELETE", path);
     },

@@ -15,7 +15,8 @@ BlindSpot.views.jobsList = function (root) {
     "<h3>Novo job</h3>" +
     '<form id="form-job" class="row g-2 align-items-end">' +
     '<div class="col-md-3"><label class="form-label">Competência</label>' +
-    '<input class="form-control" name="competencia" placeholder="2026-07" required /></div>' +
+    '<input class="form-control" name="competencia" placeholder="2026-07" required />' +
+    '<p class="field-hint">Formato AAAA-MM</p></div>' +
     '<div class="col-md-4"><label class="form-label">Observação</label>' +
     '<input class="form-control" name="observacao" placeholder="Opcional" /></div>' +
     '<div class="col-md-3"><label class="form-label">Filtro status</label>' +
@@ -110,9 +111,15 @@ BlindSpot.views.jobsList = function (root) {
   document.getElementById("form-job").addEventListener("submit", function (ev) {
     ev.preventDefault();
     var fd = new FormData(ev.target);
+    var competencia = fd.get("competencia");
+    var errMsg = BlindSpot.rules.validarCompetencia(competencia);
+    if (errMsg) {
+      BlindSpot.ui.showToast(errMsg, true);
+      return;
+    }
     BlindSpot.jobsApi
       .criar({
-        competencia: fd.get("competencia"),
+        competencia: competencia,
         observacao: fd.get("observacao") || null,
       })
       .then(function () {

@@ -159,11 +159,22 @@
   border-radius: 4px;
 }
 
+.field-hint {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.field-hint.is-warn {
+  color: var(--color-warn);
+  font-weight: 500;
+}
+
 .toast {
   position: fixed;
   right: 16px;
   bottom: 16px;
-  max-width: 320px;
+  max-width: 360px;
   padding: 10px 14px;
   border-radius: var(--radius);
   background: var(--color-ink);

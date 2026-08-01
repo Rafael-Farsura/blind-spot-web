@@ -44,8 +44,10 @@ BlindSpot.views.inconsistenciasList = function (root, query) {
           grid.innerHTML =
             '<section class="panel empty-state"><h2>Nenhum achado</h2>' +
             "<p>Execute um job ou carregue o seed na tela de Jobs.</p></section>";
+
           return;
         }
+
         grid.innerHTML = itens
           .map(function (item) {
             return (
@@ -82,6 +84,7 @@ BlindSpot.views.inconsistenciasList = function (root, query) {
           '<section class="panel empty-state"><h2>API indisponível</h2><p>' +
           h.escapeHtml(err.message) +
           "</p></section>";
+          
         BlindSpot.ui.showToast(err.message, true);
       });
   }
@@ -154,24 +157,39 @@ BlindSpot.views.inconsistenciaDetail = function (root, itemId) {
       (!fechada
         ? '<section class="panel">' +
           "<h3>Encerrar</h3>" +
+          '<p class="field-hint">Regra: ao escolher <strong>resolvida</strong> ou <strong>descartada</strong>, o parecer precisa ter no mínimo <strong>10 caracteres</strong>. Em “em analise” o parecer é opcional.</p>' +
           '<form id="form-fechar" class="row g-2">' +
-          '<div class="col-md-3"><select class="form-select" name="status" required>' +
+          '<div class="col-md-3"><label class="form-label">Novo status</label>' +
+          '<select class="form-select" name="status" id="select-status" required>' +
           '<option value="em_analise">em analise</option>' +
           '<option value="resolvida">resolvida</option>' +
           '<option value="descartada">descartada</option>' +
           "</select></div>" +
-          '<div class="col-md-7"><input class="form-control" name="parecer" placeholder="Parecer (obrigatório ao resolver/descartar)" /></div>' +
-          '<div class="col-md-2"><button class="btn-accent w-100" type="submit">Salvar</button></div>' +
+          '<div class="col-md-7"><label class="form-label">Parecer</label>' +
+          '<input class="form-control" name="parecer" id="input-parecer" maxlength="2000" ' +
+          'placeholder="Mín. 10 caracteres se resolver/descartar" /></div>' +
+          '<div class="col-md-2 d-flex align-items-end"><button class="btn-accent w-100" type="submit">Salvar</button></div>' +
           "</form>" +
-          '<button type="button" class="btn-danger-ghost mt-3" id="btn-excluir">Excluir inconsistência</button>' +
+          '<p class="field-hint" id="parecer-contador"></p>' +
+          '<button type="button" class="btn-danger-ghost mt-2" id="btn-excluir">Excluir inconsistência</button>' +
           "</section>"
         : "");
 
     var formComentario = document.getElementById("form-comentario");
+
     if (formComentario) {
       formComentario.addEventListener("submit", function (ev) {
         ev.preventDefault();
         var fd = new FormData(ev.target);
+        var errMsg = BlindSpot.rules.validarComentario(
+          fd.get("autor"),
+          fd.get("texto")
+        );
+        if (errMsg) {
+          BlindSpot.ui.showToast(errMsg, true);
+          return;
+        }
+
         BlindSpot.inconsistenciasApi
           .comentar(itemId, {
             autor: fd.get("autor"),
@@ -188,14 +206,60 @@ BlindSpot.views.inconsistenciaDetail = function (root, itemId) {
     }
 
     var formFechar = document.getElementById("form-fechar");
+    var selectStatus = document.getElementById("select-status");
+    var inputParecer = document.getElementById("input-parecer");
+    var contador = document.getElementById("parecer-contador");
+
+    function atualizarDicaParecer() {
+      if (!selectStatus || !inputParecer || !contador) return;
+      var status = selectStatus.value;
+      var len = String(inputParecer.value || "").trim().length;
+      var precisa = status === "resolvida" || status === "descartada";
+      if (precisa) {
+        contador.textContent =
+          "Parecer: " + len + "/" + BlindSpot.rules.PARECER_MIN + " caracteres mínimos.";
+        contador.classList.toggle("is-warn", len < BlindSpot.rules.PARECER_MIN);
+      } else {
+        contador.textContent = "Parecer opcional para “em analise”.";
+        contador.classList.remove("is-warn");
+      }
+    }
+
+    if (selectStatus) {
+      selectStatus.addEventListener("change", function () {
+        atualizarDicaParecer();
+        if (
+          selectStatus.value === "resolvida" ||
+          selectStatus.value === "descartada"
+        ) {
+          BlindSpot.ui.showToast(
+            "Lembrete: parecer com pelo menos 10 caracteres é obrigatório para fechar."
+          );
+        }
+      });
+    }
+    if (inputParecer) {
+      inputParecer.addEventListener("input", atualizarDicaParecer);
+    }
+    atualizarDicaParecer();
+
     if (formFechar) {
       formFechar.addEventListener("submit", function (ev) {
         ev.preventDefault();
         var fd = new FormData(ev.target);
+        var status = fd.get("status");
+        var parecer = fd.get("parecer");
+        var errMsg = BlindSpot.rules.validarEncerramento(status, parecer);
+        if (errMsg) {
+          BlindSpot.ui.showToast(errMsg, true);
+          if (inputParecer) inputParecer.focus();
+          return;
+        }
+
         BlindSpot.inconsistenciasApi
           .atualizar(itemId, {
-            status: fd.get("status"),
-            parecer: fd.get("parecer") || null,
+            status: status,
+            parecer: parecer || null,
           })
           .then(function () {
             BlindSpot.ui.showToast("Status atualizado.");
